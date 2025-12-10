@@ -60,6 +60,7 @@ declare module "light-bolt11-decoder" {
     | { name: "timestamp"; letters: string; value: number }
     | { name: "payment_hash"; tag: "p"; letters: string; value: string }
     | { name: "description"; tag: "d"; letters: string; value: string }
+    | { name: "description_hash"; tag: "h"; letters: string; value: string }
     | { name: "payment_secret"; tag: "s"; letters: string; value: string }
     | {
         name: "min_final_cltv_expiry";
