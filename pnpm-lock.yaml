@@ -4,67 +4,19 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
-overrides:
-  '@oxlint/binding-darwin-x64': '-'
-  '@oxlint/binding-linux-riscv64-gnu': '-'
-  '@oxlint/binding-darwin-arm64': '-'
-  '@oxlint/binding-android-arm64': '-'
-  '@oxlint/binding-android-arm-eabi': '-'
-  '@oxlint/binding-win32-arm64-msvc': '-'
-  '@oxlint/binding-linux-arm-gnueabihf': '-'
-  '@oxlint/binding-linux-arm64-gnu': '-'
-  '@oxlint/binding-win32-ia32-msvc': '-'
-  '@oxlint/binding-linux-ppc64-gnu': '-'
-  '@oxlint/binding-linux-arm64-musl': '-'
-  '@oxlint/binding-linux-x64-musl': '-'
-  '@oxlint/binding-linux-s390x-gnu': '-'
-  '@oxlint/binding-linux-riscv64-musl': '-'
-  '@oxlint/binding-linux-arm-musleabihf': '-'
-  '@oxlint/binding-openharmony-arm64': '-'
-  '@oxlint/binding-freebsd-x64': '-'
-  '@oxlint/binding-win32-x64-msvc': '-'
-
 importers:
 
   .:
     dependencies:
       '@scure/base':
-        specifier: 2.0.0
-        version: 2.0.0
-    devDependencies:
-      oxlint:
-        specifier: ^1.51.0
-        version: 1.51.0
+        specifier: 2.2.0
+        version: 2.2.0
 
 packages:
 
-  '@oxlint/binding-linux-x64-gnu@1.51.0':
-    resolution: {integrity: sha512-e0Mz0DizsCoqNIjeOg6OUKe8JKJWZ5zZlwsd05Bmr51Jo3AOL4UJnPvwKumr4BBtBrDZkCmOLhCvDGm95nJM2g==}
-    engines: {node: ^20.19.0 || >=22.12.0}
-    cpu: [x64]
-    os: [linux]
-    libc: [glibc]
-
-  '@scure/base@2.0.0':
-    resolution: {integrity: sha512-3E1kpuZginKkek01ovG8krQ0Z44E3DHPjc5S2rjJw9lZn3KSQOs8S7wqikF/AH7iRanHypj85uGyxk0XAyC37w==}
-
-  oxlint@1.51.0:
-    resolution: {integrity: sha512-g6DNPaV9/WI9MoX2XllafxQuxwY1TV++j7hP8fTJByVBuCoVtm3dy9f/2vtH/HU40JztcgWF4G7ua+gkainklQ==}
-    engines: {node: ^20.19.0 || >=22.12.0}
-    hasBin: true
-    peerDependencies:
-      oxlint-tsgolint: '>=0.15.0'
-    peerDependenciesMeta:
-      oxlint-tsgolint:
-        optional: true
+  '@scure/base@2.2.0':
+    resolution: {integrity: sha512-b8XEupJibegiXV+tDUseI8oLQc8ei3d/4Jkb2RpbHh3MfE054ov3uIz2dhFkB3FI8iwYkEh0gGCApkrYggkPNg==}
 
 snapshots:
 
-  '@oxlint/binding-linux-x64-gnu@1.51.0':
-    optional: true
-
-  '@scure/base@2.0.0': {}
-
-  oxlint@1.51.0:
-    optionalDependencies:
-      '@oxlint/binding-linux-x64-gnu': 1.51.0
+  '@scure/base@2.2.0': {}

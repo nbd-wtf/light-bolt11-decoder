@@ -1,11 +1,11 @@
-//#region ../node_modules/.pnpm/@scure+base@2.0.0/node_modules/@scure/base/index.js
+//#region ../node_modules/.pnpm/@scure+base@2.2.0/node_modules/@scure/base/index.js
 /*! scure-base - MIT License (c) 2022 Paul Miller (paulmillr.com) */
 function isBytes(a) {
-	return a instanceof Uint8Array || ArrayBuffer.isView(a) && a.constructor.name === "Uint8Array";
+	return a instanceof Uint8Array || ArrayBuffer.isView(a) && a.constructor.name === "Uint8Array" && "BYTES_PER_ELEMENT" in a && a.BYTES_PER_ELEMENT === 1;
 }
 /** Asserts something is Uint8Array. */
 function abytes(b) {
-	if (!isBytes(b)) throw new Error("Uint8Array expected");
+	if (!isBytes(b)) throw new TypeError("Uint8Array expected");
 }
 function isArrayOf(isString, arr) {
 	if (!Array.isArray(arr)) return false;
@@ -14,24 +14,25 @@ function isArrayOf(isString, arr) {
 	else return arr.every((item) => Number.isSafeInteger(item));
 }
 function afn(input) {
-	if (typeof input !== "function") throw new Error("function expected");
+	if (typeof input !== "function") throw new TypeError("function expected");
 	return true;
 }
 function astr(label, input) {
-	if (typeof input !== "string") throw new Error(`${label}: string expected`);
+	if (typeof input !== "string") throw new TypeError(`${label}: string expected`);
 	return true;
 }
 function anumber(n) {
-	if (!Number.isSafeInteger(n)) throw new Error(`invalid integer: ${n}`);
+	if (typeof n !== "number") throw new TypeError(`number expected, got ${typeof n}`);
+	if (!Number.isSafeInteger(n)) throw new RangeError(`invalid integer: ${n}`);
 }
 function aArr(input) {
-	if (!Array.isArray(input)) throw new Error("array expected");
+	if (!Array.isArray(input)) throw new TypeError("array expected");
 }
 function astrArr(label, input) {
-	if (!isArrayOf(true, input)) throw new Error(`${label}: array of strings expected`);
+	if (!isArrayOf(true, input)) throw new TypeError(`${label}: array of strings expected`);
 }
 function anumArr(label, input) {
-	if (!isArrayOf(false, input)) throw new Error(`${label}: array of numbers expected`);
+	if (!isArrayOf(false, input)) throw new TypeError(`${label}: array of numbers expected`);
 }
 /**
 * @__NO_SIDE_EFFECTS__
@@ -133,8 +134,8 @@ const powers = /* @__PURE__ */ (() => {
 */
 function convertRadix2(data, from, to, padding) {
 	aArr(data);
-	if (from <= 0 || from > 32) throw new Error(`convertRadix2: wrong from=${from}`);
-	if (to <= 0 || to > 32) throw new Error(`convertRadix2: wrong to=${to}`);
+	if (from <= 0 || from > 32) throw new RangeError(`convertRadix2: wrong from=${from}`);
+	if (to <= 0 || to > 32) throw new RangeError(`convertRadix2: wrong to=${to}`);
 	if (/* @__PURE__ */ radix2carry(from, to) > 32) throw new Error(`convertRadix2: carry overflow from=${from} to=${to} carryBits=${/* @__PURE__ */ radix2carry(from, to)}`);
 	let carry = 0;
 	let pos = 0;
@@ -165,11 +166,11 @@ function convertRadix2(data, from, to, padding) {
 */
 function radix2(bits, revPadding = false) {
 	anumber(bits);
-	if (bits <= 0 || bits > 32) throw new Error("radix2: bits should be in (0..32]");
-	if (/* @__PURE__ */ radix2carry(8, bits) > 32 || /* @__PURE__ */ radix2carry(bits, 8) > 32) throw new Error("radix2: carry overflow");
+	if (bits <= 0 || bits > 32) throw new RangeError("radix2: bits should be in (0..32]");
+	if (/* @__PURE__ */ radix2carry(8, bits) > 32 || /* @__PURE__ */ radix2carry(bits, 8) > 32) throw new RangeError("radix2: carry overflow");
 	return {
 		encode: (bytes) => {
-			if (!isBytes(bytes)) throw new Error("radix2.encode input should be Uint8Array");
+			if (!isBytes(bytes)) throw new TypeError("radix2.encode input should be Uint8Array");
 			return convertRadix2(Array.from(bytes), 8, bits, !revPadding);
 		},
 		decode: (digits) => {
@@ -186,155 +187,17 @@ function unsafeWrapper(fn) {
 		} catch (e) {}
 	};
 }
-/**
-* base16 encoding from RFC 4648.
-* @example
-* ```js
-* base16.encode(Uint8Array.from([0x12, 0xab]));
-* // => '12AB'
-* ```
-*/
-const base16 = chain(radix2(4), alphabet("0123456789ABCDEF"), join(""));
-/**
-* base32 encoding from RFC 4648. Has padding.
-* Use `base32nopad` for unpadded version.
-* Also check out `base32hex`, `base32hexnopad`, `base32crockford`.
-* @example
-* ```js
-* base32.encode(Uint8Array.from([0x12, 0xab]));
-* // => 'CKVQ===='
-* base32.decode('CKVQ====');
-* // => Uint8Array.from([0x12, 0xab])
-* ```
-*/
-const base32 = chain(radix2(5), alphabet("ABCDEFGHIJKLMNOPQRSTUVWXYZ234567"), padding(5), join(""));
-/**
-* base32 encoding from RFC 4648. No padding.
-* Use `base32` for padded version.
-* Also check out `base32hex`, `base32hexnopad`, `base32crockford`.
-* @example
-* ```js
-* base32nopad.encode(Uint8Array.from([0x12, 0xab]));
-* // => 'CKVQ'
-* base32nopad.decode('CKVQ');
-* // => Uint8Array.from([0x12, 0xab])
-* ```
-*/
-const base32nopad = chain(radix2(5), alphabet("ABCDEFGHIJKLMNOPQRSTUVWXYZ234567"), join(""));
-/**
-* base32 encoding from RFC 4648. Padded. Compared to ordinary `base32`, slightly different alphabet.
-* Use `base32hexnopad` for unpadded version.
-* @example
-* ```js
-* base32hex.encode(Uint8Array.from([0x12, 0xab]));
-* // => '2ALG===='
-* base32hex.decode('2ALG====');
-* // => Uint8Array.from([0x12, 0xab])
-* ```
-*/
-const base32hex = chain(radix2(5), alphabet("0123456789ABCDEFGHIJKLMNOPQRSTUV"), padding(5), join(""));
-/**
-* base32 encoding from RFC 4648. No padding. Compared to ordinary `base32`, slightly different alphabet.
-* Use `base32hex` for padded version.
-* @example
-* ```js
-* base32hexnopad.encode(Uint8Array.from([0x12, 0xab]));
-* // => '2ALG'
-* base32hexnopad.decode('2ALG');
-* // => Uint8Array.from([0x12, 0xab])
-* ```
-*/
-const base32hexnopad = chain(radix2(5), alphabet("0123456789ABCDEFGHIJKLMNOPQRSTUV"), join(""));
-/**
-* base32 encoding from RFC 4648. Doug Crockford's version.
-* https://www.crockford.com/base32.html
-* @example
-* ```js
-* base32crockford.encode(Uint8Array.from([0x12, 0xab]));
-* // => '2ANG'
-* base32crockford.decode('2ANG');
-* // => Uint8Array.from([0x12, 0xab])
-* ```
-*/
-const base32crockford = chain(radix2(5), alphabet("0123456789ABCDEFGHJKMNPQRSTVWXYZ"), join(""), normalize((s) => s.toUpperCase().replace(/O/g, "0").replace(/[IL]/g, "1")));
-const hasBase64Builtin = typeof Uint8Array.from([]).toBase64 === "function" && typeof Uint8Array.fromBase64 === "function";
-const decodeBase64Builtin = (s, isUrl) => {
-	astr("base64", s);
-	const re = isUrl ? /^[A-Za-z0-9=_-]+$/ : /^[A-Za-z0-9=+/]+$/;
-	const alphabet = isUrl ? "base64url" : "base64";
-	if (s.length > 0 && !re.test(s)) throw new Error("invalid base64");
-	return Uint8Array.fromBase64(s, {
-		alphabet,
-		lastChunkHandling: "strict"
-	});
-};
-/**
-* base64 from RFC 4648. Padded.
-* Use `base64nopad` for unpadded version.
-* Also check out `base64url`, `base64urlnopad`.
-* Falls back to built-in function, when available.
-* @example
-* ```js
-* base64.encode(Uint8Array.from([0x12, 0xab]));
-* // => 'Eqs='
-* base64.decode('Eqs=');
-* // => Uint8Array.from([0x12, 0xab])
-* ```
-*/
-const base64 = hasBase64Builtin ? {
-	encode(b) {
-		abytes(b);
-		return b.toBase64();
-	},
-	decode(s) {
-		return decodeBase64Builtin(s, false);
-	}
-} : chain(radix2(6), alphabet("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"), padding(6), join(""));
-/**
-* base64 from RFC 4648. No padding.
-* Use `base64` for padded version.
-* @example
-* ```js
-* base64nopad.encode(Uint8Array.from([0x12, 0xab]));
-* // => 'Eqs'
-* base64nopad.decode('Eqs');
-* // => Uint8Array.from([0x12, 0xab])
-* ```
-*/
-const base64nopad = chain(radix2(6), alphabet("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"), join(""));
-/**
-* base64 from RFC 4648, using URL-safe alphabet. Padded.
-* Use `base64urlnopad` for unpadded version.
-* Falls back to built-in function, when available.
-* @example
-* ```js
-* base64url.encode(Uint8Array.from([0x12, 0xab]));
-* // => 'Eqs='
-* base64url.decode('Eqs=');
-* // => Uint8Array.from([0x12, 0xab])
-* ```
-*/
-const base64url = hasBase64Builtin ? {
-	encode(b) {
-		abytes(b);
-		return b.toBase64({ alphabet: "base64url" });
-	},
-	decode(s) {
-		return decodeBase64Builtin(s, true);
-	}
-} : chain(radix2(6), alphabet("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_"), padding(6), join(""));
-/**
-* base64 from RFC 4648, using URL-safe alphabet. No padding.
-* Use `base64url` for padded version.
-* @example
-* ```js
-* base64urlnopad.encode(Uint8Array.from([0x12, 0xab]));
-* // => 'Eqs'
-* base64urlnopad.decode('Eqs');
-* // => Uint8Array.from([0x12, 0xab])
-* ```
-*/
-const base64urlnopad = chain(radix2(6), alphabet("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_"), join(""));
+chain(radix2(4), alphabet("0123456789ABCDEF"), join(""));
+chain(radix2(5), alphabet("ABCDEFGHIJKLMNOPQRSTUVWXYZ234567"), padding(5), join(""));
+chain(radix2(5), alphabet("ABCDEFGHIJKLMNOPQRSTUVWXYZ234567"), join(""));
+chain(radix2(5), alphabet("0123456789ABCDEFGHIJKLMNOPQRSTUV"), padding(5), join(""));
+chain(radix2(5), alphabet("0123456789ABCDEFGHIJKLMNOPQRSTUV"), join(""));
+chain(radix2(5), alphabet("0123456789ABCDEFGHJKMNPQRSTVWXYZ"), join(""), normalize((s) => s.toUpperCase().replace(/O/g, "0").replace(/[IL]/g, "1")));
+const hasBase64Builtin = /* @__PURE__ */ (() => typeof Uint8Array.from([]).toBase64 === "function" && typeof Uint8Array.fromBase64 === "function")();
+hasBase64Builtin || chain(radix2(6), alphabet("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"), padding(6), join(""));
+chain(radix2(6), alphabet("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"), join(""));
+hasBase64Builtin || chain(radix2(6), alphabet("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_"), padding(6), join(""));
+chain(radix2(6), alphabet("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_"), join(""));
 const BECH_ALPHABET = chain(alphabet("qpzry9x8gf2tvdw0s3jn54khce6mua7l"), join(""));
 const POLYMOD_GENERATORS = [
 	996825010,
@@ -429,31 +292,131 @@ function genBech32(encoding) {
 }
 /**
 * bech32 from BIP 173. Operates on words.
-* For high-level, check out scure-btc-signer:
-* https://github.com/paulmillr/scure-btc-signer.
+* For high-level helpers, check out {@link https://github.com/paulmillr/scure-btc-signer | scure-btc-signer}.
+* @example
+* Convert bytes to words, encode them, then decode back.
+* ```ts
+* const words = bech32.toWords(Uint8Array.from([1, 2, 3]));
+* const text = bech32.encode('bc', words);
+* bech32.decode(text);
+* ```
 */
-const bech32 = genBech32("bech32");
+const bech32 = /* @__PURE__ */ Object.freeze(genBech32("bech32"));
+genBech32("bech32m");
+const _isWellFormedShim = (str) => {
+	try {
+		return encodeURI(str) !== null;
+	} catch {
+		return false;
+	}
+};
+const _isWellFormed = /* @__PURE__ */ (() => typeof "".isWellFormed === "function" ? (str) => str.isWellFormed() : _isWellFormedShim)();
+const utf8Fallback = /* @__PURE__ */ Object.freeze({
+	encode(data) {
+		abytes(data);
+		let res = "";
+		for (let i = 0; i < data.length;) {
+			const a = data[i++];
+			if (a < 128) {
+				res += String.fromCharCode(a);
+				continue;
+			}
+			if (a < 194 || i >= data.length) throw new TypeError(`invalid utf8 at byte ${i - 1}`);
+			const b = data[i++];
+			if ((b & 192) !== 128) throw new TypeError(`invalid utf8 at byte ${i - 1}`);
+			let cp = (a & 31) << 6 | b & 63;
+			if (a >= 224) {
+				if (i >= data.length) throw new TypeError(`invalid utf8 at byte ${i - 1}`);
+				const c = data[i++];
+				if ((c & 192) !== 128 || a === 224 && b < 160 || a === 237 && b >= 160) throw new TypeError(`invalid utf8 at byte ${i - 1}`);
+				cp = (a & 15) << 12 | (b & 63) << 6 | c & 63;
+				if (a >= 240) {
+					if (i >= data.length) throw new TypeError(`invalid utf8 at byte ${i - 1}`);
+					const d = data[i++];
+					if (a > 244 || (d & 192) !== 128 || a === 240 && b < 144 || a === 244 && b >= 144) throw new TypeError(`invalid utf8 at byte ${i - 1}`);
+					cp = (a & 7) << 18 | (b & 63) << 12 | (c & 63) << 6 | d & 63;
+				}
+			}
+			if (cp < 65536) res += String.fromCharCode(cp);
+			else {
+				cp -= 65536;
+				res += String.fromCharCode((cp >> 10) + 55296, (cp & 1023) + 56320);
+			}
+		}
+		return res;
+	},
+	decode(str) {
+		astr("utf8", str);
+		if (!_isWellFormed(str)) throw new TypeError("utf8 expected well-formed string");
+		const res = new Uint8Array(str.length * 3);
+		let pos = 0;
+		for (let i = 0; i < str.length; i++) {
+			let c = str.charCodeAt(i);
+			if (c < 128) {
+				res[pos++] = c;
+				continue;
+			}
+			if (c >= 55296 && c <= 57343) {
+				const d = str.charCodeAt(++i);
+				c = 65536 + (c - 55296 << 10) + d - 56320;
+			}
+			if (c >= 65536) {
+				res[pos++] = c >> 18 | 240;
+				res[pos++] = c >> 12 & 63 | 128;
+			} else if (c >= 2048) res[pos++] = c >> 12 | 224;
+			else res[pos++] = c >> 6 | 192;
+			if (c >= 2048) res[pos++] = c >> 6 & 63 | 128;
+			res[pos++] = c & 63 | 128;
+		}
+		return res.subarray(0, pos);
+	}
+});
 /**
-* bech32m from BIP 350. Operates on words.
-* It was to mitigate `bech32` weaknesses.
-* For high-level, check out scure-btc-signer:
-* https://github.com/paulmillr/scure-btc-signer.
-*/
-const bech32m = genBech32("bech32m");
-/**
-* UTF-8-to-byte decoder. Uses built-in TextDecoder / TextEncoder.
+* Strict UTF-8-to-byte decoder. Uses built-in TextDecoder / TextEncoder when available.
+* Method names follow `BytesCoder`, so `encode(bytes)` returns a string and
+* `decode(string)` returns bytes.
+* `encode(bytes)` requires Uint8Array input, preserves an explicit leading BOM, and
+*   throws on invalid UTF-8 bytes.
+* `decode(string)` requires a primitive string and throws on malformed UTF-16 strings with
+*   lone surrogates.
 * @example
 * ```js
 * const b = utf8.decode("hey"); // => new Uint8Array([ 104, 101, 121 ])
 * const str = utf8.encode(b); // "hey"
 * ```
 */
-const utf8 = {
-	encode: (data) => new TextDecoder().decode(data),
-	decode: (str) => new TextEncoder().encode(str)
-};
-const hasHexBuiltin = typeof Uint8Array.from([]).toHex === "function" && typeof Uint8Array.fromHex === "function";
-const hexBuiltin = {
+const utf8 = /* @__PURE__ */ (() => {
+	let _utf8Encoder;
+	let _utf8Decoder;
+	const utf8Builtin = {
+		encode(data) {
+			abytes(data);
+			return (_utf8Decoder || (_utf8Decoder = new TextDecoder("utf-8", {
+				ignoreBOM: true,
+				fatal: true
+			}))).decode(data);
+		},
+		decode(str) {
+			astr("utf8", str);
+			if (!_isWellFormed(str)) throw new TypeError("utf8 expected well-formed string");
+			return (_utf8Encoder || (_utf8Encoder = new TextEncoder())).encode(str);
+		}
+	};
+	return Object.freeze({
+		encode: typeof TextDecoder === "function" ? utf8Builtin.encode : utf8Fallback.encode,
+		decode: typeof TextEncoder === "function" ? utf8Builtin.decode : utf8Fallback.decode
+	});
+})();
+/**
+* hex string decoder. Uses built-in function, when available.
+* Lowercase codec; unlike `base16`, this variant accepts either hex case and emits lowercase.
+* @example
+* ```js
+* const b = hex.decode("0102ff"); // => new Uint8Array([ 1, 2, 255 ])
+* const str = hex.encode(b); // "0102ff"
+* ```
+*/
+const hex = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ (() => typeof Uint8Array.from([]).toHex === "function" && typeof Uint8Array.fromHex === "function")() ? {
 	encode(data) {
 		abytes(data);
 		return data.toHex();
@@ -462,20 +425,10 @@ const hexBuiltin = {
 		astr("hex", s);
 		return Uint8Array.fromHex(s);
 	}
-};
-/**
-* hex string decoder. Uses built-in function, when available.
-* @example
-* ```js
-* const b = hex.decode("0102ff"); // => new Uint8Array([ 1, 2, 255 ])
-* const str = hex.encode(b); // "0102ff"
-* ```
-*/
-const hex = hasHexBuiltin ? hexBuiltin : chain(radix2(4), alphabet("0123456789abcdef"), join(""), normalize((s) => {
+} : chain(radix2(4), alphabet("0123456789abcdef"), join(""), normalize((s) => {
 	if (typeof s !== "string" || s.length % 2 !== 0) throw new TypeError(`hex.decode: expected string, got ${typeof s} with length ${s.length}`);
 	return s.toLowerCase();
-}));
-
+})));
 //#endregion
 //#region ../bolt11.js
 /**
@@ -859,7 +812,6 @@ function decode(paymentRequest, network) {
 		return section ? section.value : void 0;
 	}
 }
-
 //#endregion
 //#region example.js
 const TAGCOLORS = {
@@ -947,6 +899,5 @@ function setPR(pr) {
 	decodedDiv.innerHTML = "";
 	for (const section of parsed.sections) decodedDiv.append(newSpan(section));
 }
-
 //#endregion
 export { setPR, start };

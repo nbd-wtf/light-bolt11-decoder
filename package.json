@@ -1,6 +1,6 @@
 {
   "name": "light-bolt11-decoder",
-  "version": "3.2.5",
+  "version": "3.2.6",
   "type": "module",
   "description": "decode lightning invoices without overhead (doesn't check signatures).",
   "main": "bolt11.js",
@@ -24,31 +24,6 @@
     "lint": "oxlint"
   },
   "dependencies": {
-    "@scure/base": "2.0.0"
-  },
-  "devDependencies": {
-    "oxlint": "^1.51.0"
-  },
-  "pnpm": {
-    "overrides": {
-      "@oxlint/binding-darwin-x64" : "-",
-      "@oxlint/binding-linux-riscv64-gnu" : "-",
-      "@oxlint/binding-darwin-arm64" : "-",
-      "@oxlint/binding-android-arm64" : "-",
-      "@oxlint/binding-android-arm-eabi" : "-",
-      "@oxlint/binding-win32-arm64-msvc" : "-",
-      "@oxlint/binding-linux-arm-gnueabihf" : "-",
-      "@oxlint/binding-linux-arm64-gnu" : "-",
-      "@oxlint/binding-win32-ia32-msvc" : "-",
-      "@oxlint/binding-linux-ppc64-gnu" : "-",
-      "@oxlint/binding-linux-arm64-musl" : "-",
-      "@oxlint/binding-linux-x64-musl" : "-",
-      "@oxlint/binding-linux-s390x-gnu" : "-",
-      "@oxlint/binding-linux-riscv64-musl" : "-",
-      "@oxlint/binding-linux-arm-musleabihf" : "-",
-      "@oxlint/binding-openharmony-arm64" : "-",
-      "@oxlint/binding-freebsd-x64" : "-",
-      "@oxlint/binding-win32-x64-msvc" : "-"
-    }
+    "@scure/base": "2.2.0"
   }
 }

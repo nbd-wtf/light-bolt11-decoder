@@ -75,7 +75,6 @@
     "unicorn/no-array-method-this-argument": "warn",
     "unicorn/no-array-reduce": "warn",
     "unicorn/no-document-cookie": "warn",
-    "unicorn/no-for-loop": "warn",
     "unicorn/no-length-as-slice-end": "warn",
     "unicorn/no-nested-ternary": "warn",
     "unicorn/prefer-array-index-of": "warn",

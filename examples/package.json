@@ -5,15 +5,10 @@
     "light-bolt11-decoder": "../"
   },
   "devDependencies": {
-    "rolldown": "^1.0.0-rc.6"
+    "rolldown": "^1.1.0"
   },
   "scripts": {
     "build": "rolldown example.js --file example.build.js",
-    "lint": "oxlint --config=../.oxlintrc.json"
-  },
-  "pnpm": {
-    "overrides": {
-      "vite": "npm:rolldown-vite@latest"
-    }
+    "lint": "oxlint"
   }
 }
