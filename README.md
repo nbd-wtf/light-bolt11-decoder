@@ -6,7 +6,7 @@ A lightweight and naïve library for decoding lightning network payment requests
 
 It doesn't recover payee from signature, doesn't check signature, doesn't parse fallback addresses and doesn't do any encoding -- therefore dependencies are very minimal (no libsecp256k1 here).
 
-Code derived from [bolt11](https://npmjs.com/package/bolt11), which has the full functionality but it's a pain to run in browsers.
+Code derived from [bolt11](https://npmjs.com/package/bolt11), which has the full functionality, but it's a pain to run in browsers.
 
 Spits out "sections" of the invoice, in a way that is used to make visualizations like https://bolt11.org/.
 

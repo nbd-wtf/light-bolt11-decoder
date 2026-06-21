@@ -1,9 +1,9 @@
 {
   "name": "light-bolt11-decoder",
-  "version": "3.2.0",
+  "version": "3.2.6",
+  "type": "module",
   "description": "decode lightning invoices without overhead (doesn't check signatures).",
   "main": "bolt11.js",
-  "types": "bolt11.d.ts",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/fiatjaf/light-bolt11-decoder.git"
@@ -19,12 +19,11 @@
   ],
   "author": "fiatjaf",
   "license": "MIT",
-  "dependencies": {
-    "@scure/base": "1.1.1"
+  "scripts": {
+    "test": "node --test --experimental-test-coverage tests/basic.test.js",
+    "lint": "oxlint"
   },
-  "devDependencies": {
-    "eslint": "^8.0.0",
-    "jest": "^29.4.3",
-    "prettier": "^2.4.1"
+  "dependencies": {
+    "@scure/base": "2.2.0"
   }
 }

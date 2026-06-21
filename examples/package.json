@@ -1,12 +1,14 @@
 {
+  "name": "light-bolt11-decoder-example",
+  "type": "module",
   "dependencies": {
-    "@esbuild-plugins/node-globals-polyfill": "^0.1.1",
-    "buffer": "^6.0.3",
-    "esbuild": "^0.14.36",
-    "light-bolt11-decoder": "^2.0.0",
-    "react": "^18.0.0",
-    "react-dom": "^18.0.0",
-    "styled-components": "^5.3.5",
-    "use-computed-state": "^1.1.0"
+    "light-bolt11-decoder": "../"
+  },
+  "devDependencies": {
+    "rolldown": "^1.1.0"
+  },
+  "scripts": {
+    "build": "rolldown example.js --file example.build.js",
+    "lint": "oxlint"
   }
 }
