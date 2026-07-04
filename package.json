@@ -1,6 +1,6 @@
 {
   "name": "light-bolt11-decoder",
-  "version": "3.2.6",
+  "version": "3.2.7",
   "type": "module",
   "description": "decode lightning invoices without overhead (doesn't check signatures).",
   "main": "bolt11.js",
