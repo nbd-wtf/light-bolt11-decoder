@@ -375,6 +375,11 @@ function decode(paymentRequest, network) {
       // route hints can be multiple, so this won't work for them
       continue
     }
+    if (name === 'expiry') {
+      // already defined above as timestamp + expiry (the absolute deadline);
+      // this generic loop would otherwise overwrite it with the bare tag value
+      continue
+    }
 
     Object.defineProperty(result, name, {
       get() {
