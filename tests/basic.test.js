@@ -137,7 +137,7 @@ describe('decoding', () => {
           letters: '54l567'
         }
       ],
-      expiry: 172800,
+      expiry: 1649032503, // timestamp (1648859703) + expiry tag (172800)
       route_hints: [
         [
           {
