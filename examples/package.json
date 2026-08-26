@@ -5,7 +5,7 @@
     "light-bolt11-decoder": "../"
   },
   "devDependencies": {
-    "rolldown": "1.1.4"
+    "rolldown": "1.2.5"
   },
   "scripts": {
     "build": "rolldown example.js --file example.build.js",
