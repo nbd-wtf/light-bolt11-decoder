@@ -21,6 +21,7 @@
     "eslint/no-duplicate-imports": ["warn", { "includeExports": true }],
     "eslint/no-empty": "warn",
     "eslint/no-empty-function": "warn",
+    "eslint/no-inline-comments": "off",
     "eslint/no-iterator": "warn",
     "eslint/no-lone-blocks": "warn",
     "eslint/no-multi-assign": "warn",

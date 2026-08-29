@@ -21,7 +21,7 @@
   "license": "MIT",
   "scripts": {
     "test": "node --test --experimental-test-coverage tests/basic.test.js",
-    "lint": "oxlint"
+    "lint": "oxlint --ignore-path=example.build.js"
   },
   "dependencies": {
     "@scure/base": "2.4.0"

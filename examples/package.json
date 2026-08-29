@@ -9,6 +9,6 @@
   },
   "scripts": {
     "build": "rolldown example.js --file example.build.js",
-    "lint": "oxlint"
+    "lint": "oxlint --ignore-path=example.build.js"
   }
 }
