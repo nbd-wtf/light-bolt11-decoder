@@ -673,13 +673,13 @@ function routingInfoParser(words) {
 * @returns {{}}
 */
 function featureBitsParser(words) {
-	const bools = words.slice().toReversed().map((word) => [
+	const bools = words.slice().toReversed().flatMap((word) => [
 		Boolean(word & 1),
 		Boolean(word & 2),
 		Boolean(word & 4),
 		Boolean(word & 8),
 		Boolean(word & 16)
-	]).reduce((finalArr, itemArr) => finalArr.concat(itemArr), []);
+	]);
 	while (bools.length < FEATUREBIT_ORDER.length * 2) bools.push(false);
 	const featureBits = {};
 	for (const featureName of FEATUREBIT_ORDER) {
@@ -706,12 +706,12 @@ function featureBitsParser(words) {
 */
 function hrpToMillisat(hrpString, outputString) {
 	let divisor, value;
-	if (/^[munp]$/.test(hrpString.slice(-1))) {
+	if (/^[munp]$/u.test(hrpString.slice(-1))) {
 		divisor = hrpString.slice(-1);
 		value = hrpString.slice(0, -1);
-	} else if (/^[^munp0-9]$/.test(hrpString.slice(-1))) throw new Error("Not a valid multiplier for the amount");
+	} else if (/^[^munp0-9]$/u.test(hrpString.slice(-1))) throw new Error("Not a valid multiplier for the amount");
 	else value = hrpString;
-	if (!/^\d+$/.test(value)) throw new Error("Not a valid human readable amount");
+	if (!/^\d+$/u.test(value)) throw new Error("Not a valid human readable amount");
 	const valueBN = BigInt(value);
 	const millisatoshisBN = divisor ? valueBN * MILLISATS_PER_BTC / DIVISORS[divisor] : valueBN * MILLISATS_PER_BTC;
 	if (divisor === "p" && !(valueBN % BigInt(10) === BigInt(0)) || millisatoshisBN > MAX_MILLISATS) throw new Error("Amount is outside of valid range");
@@ -736,8 +736,8 @@ function decode(paymentRequest, network) {
 	let letters = paymentRequest_lower.slice(prefix.length + 1);
 	let sigWords = words.slice(-104);
 	words = words.slice(0, -104);
-	let prefixMatches = prefix.match(/^ln(\S+?)(\d*)([a-zA-Z]?)$/);
-	if (prefixMatches && !prefixMatches[2]) prefixMatches = prefix.match(/^ln(\S+)$/);
+	let prefixMatches = prefix.match(/^ln(\S+?)(\d*)([a-zA-Z]?)$/u);
+	if (prefixMatches && !prefixMatches[2]) prefixMatches = prefix.match(/^ln(\S+)$/u);
 	if (!prefixMatches) throw new Error("Not a proper lightning payment request");
 	sections.push({
 		name: "lightning_network",

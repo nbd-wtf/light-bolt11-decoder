@@ -223,14 +223,13 @@ function featureBitsParser(words) {
   const bools = words
     .slice()
     .toReversed()
-    .map(word => [
+    .flatMap(word => [
       Boolean(word & 0b1),
       Boolean(word & 0b10),
       Boolean(word & 0b100),
       Boolean(word & 0b1000),
       Boolean(word & 0b10000)
     ])
-    .reduce((finalArr, itemArr) => finalArr.concat(itemArr), [])
   while (bools.length < FEATUREBIT_ORDER.length * 2)
     bools.push(false)
 
@@ -270,15 +269,15 @@ function featureBitsParser(words) {
  */
 function hrpToMillisat(hrpString, outputString) {
   let divisor, value
-  if (/^[munp]$/.test(hrpString.slice(-1))) {
+  if (/^[munp]$/u.test(hrpString.slice(-1))) {
     divisor = hrpString.slice(-1)
     value = hrpString.slice(0, -1)
-  } else if (/^[^munp0-9]$/.test(hrpString.slice(-1)))
+  } else if (/^[^munp0-9]$/u.test(hrpString.slice(-1)))
     throw new Error('Not a valid multiplier for the amount')
   else
     value = hrpString
 
-  if (!/^\d+$/.test(value))
+  if (!/^\d+$/u.test(value))
     throw new Error('Not a valid human readable amount')
 
   const valueBN = BigInt(value)
@@ -324,9 +323,9 @@ function decode(paymentRequest, network) {
   // doesn't have anything, there's a good chance the last letter of the
   // coin type got captured by the third group, so just re-regex without
   // the number.
-  let prefixMatches = prefix.match(/^ln(\S+?)(\d*)([a-zA-Z]?)$/)
+  let prefixMatches = prefix.match(/^ln(\S+?)(\d*)([a-zA-Z]?)$/u)
   if (prefixMatches && !prefixMatches[2])
-    prefixMatches = prefix.match(/^ln(\S+)$/)
+    prefixMatches = prefix.match(/^ln(\S+)$/u)
   if (!prefixMatches)
     throw new Error('Not a proper lightning payment request')
 
