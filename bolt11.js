@@ -224,11 +224,11 @@ function featureBitsParser(words) {
     .slice()
     .toReversed()
     .map(word => [
-      !!(word & 0b1),
-      !!(word & 0b10),
-      !!(word & 0b100),
-      !!(word & 0b1000),
-      !!(word & 0b10000)
+      Boolean(word & 0b1),
+      Boolean(word & 0b10),
+      Boolean(word & 0b100),
+      Boolean(word & 0b1000),
+      Boolean(word & 0b10000)
     ])
     .reduce((finalArr, itemArr) => finalArr.concat(itemArr), [])
   while (bools.length < FEATUREBIT_ORDER.length * 2)
